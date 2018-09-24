@@ -32,7 +32,7 @@ from pathlib2 import Path
 import time
 import os
 
-csv_file = "/home/dli001/Scripts/KKHC/koelkast_administratie.csv"
+csv_file = "./koelkast_administratie.csv"
 
 # open dataframe, Creeer administratie bestand wanneer dit niet bestaat
 def open_df(adm_file):

@@ -51,7 +51,7 @@ show_scrn2 = False
 show_scrn3 = False
 show_scrn4 = False
 show_scrn5 = False
-nr_items=""
+nr_items = ""
 
 
 ##### Funties:
@@ -73,36 +73,42 @@ def open_df(adm_file):
 
 # keypad function
 def keypad_key(value):
-
-    # inform function to use external/global variable
-    global nr_items
-
-    if value == 'Corr.':
-        # remove last number from `nr_items`
-        nr_items = nr_items[:-1]
-        # remove all from `entry` and put new `nr_items`
-        scrn4_txtentry1.delete('0', 'end')
-        scrn4_txtentry1.insert('end', nr_items)
-
-    elif value == 'Enter':
-        # check nr_items
-
-        if nr_items == "3529":
-            print("Items OK")
-        else:
-            print("Items ERROR!", nr_items)
-            # clear `nr_items`
-            nr_items = ""
-            # clear `entry`
-            scrn4_txtentry1.delete('0', 'end')
-
-    else:
-        # add number to nr+items
-        nr_items += value
-        # add number to `entry`
-        scrn4_txtentry1.insert('end', value)
-
-    print("Current:", nr_items)
+	# inform function to use external/global variable
+	global nr_items
+	
+	if value == 'Stop':
+		print("Stop")
+		# clear `nr_items`
+		nr_items = ""
+		# clear `entry`
+		scrn4_txtentry1.delete('0', 'end')
+		return None
+		
+	elif value == 'Corr.':
+		# remove last number from `nr_items`
+		nr_items = nr_items[:-1]
+		# remove all from `entry` and put new `nr_items`
+		scrn4_txtentry1.delete('0', 'end')
+		scrn4_txtentry1.insert('end', nr_items)
+		
+	elif value == 'Enter':
+		# check nr_items
+		if nr_items > "0":
+			print("Items OK")
+		else:
+			print("Items ERROR!", nr_items)
+			# clear `nr_items`
+			nr_items = ""
+			# clear `entry`
+			scrn4_txtentry1.delete('0', 'end')
+	
+	else:
+		# add number to nr+items
+		nr_items += value
+		# add number to `entry`
+		scrn4_txtentry1.insert('end', value)
+	
+	print("Current:", nr_items)
 
 # schoon scherm
 def toggle_screen1():							# presenteer tag
@@ -128,7 +134,7 @@ def toggle_screen2(klantnaam, klantsaldo):		# hoofdmenu
 	if show_scrn2:
 		scrn2_select1.grid(row=0, column=0, sticky=E)
 		scrn2_select2.grid(row=0, column=0, sticky=W)
-		scrn2_textlbl1.config(text = "Klant: "+klantnaam)
+		scrn2_textlbl1.config(text = klantnaam)
 		scrn2_textlbl1.grid(row=0, column=0,sticky=E)
 		scrn2_textlbl2.config(text = "Saldo: "+klantsaldo)
 		scrn2_textlbl2.grid(row=1, column=0, sticky=E)
@@ -136,16 +142,33 @@ def toggle_screen2(klantnaam, klantsaldo):		# hoofdmenu
 	else:
 		scrn2_select1.grid_remove()
 		scrn2_select2.grid_remove()
-		scrn2_textlbl1.config(text = "Klant: ")
+		scrn2_textlbl1.config(text = "")
 		scrn2_textlbl1.grid_remove()
-		scrn2_textlbl2.config(text = "Saldo: ")
+		scrn2_textlbl2.config(text = "")
 		scrn2_textlbl2.grid_remove()
 		scrn2_textlbl3.grid_remove()
 	show_scrn2 = not show_scrn2
 		
-def toggle_screen3():							# registreer nieuwe klant
+def toggle_screen3(klant):							# registreer nieuwe klant
 	global show_scrn3
-	print("niks")
+	print(klant)
+	show_scrn3 = not show_scrn3
+	if show_scrn3:
+		scrn3_textlbl1.grid(row=0, column=0, sticky=E)
+		scrn3_textlbl2.grid(row=0, column=0, sticky=E)
+		scrn3_textlbl3.grid(row=0, column=0, sticky=E)
+		scrn3_textlbl4.grid(row=0, column=0, sticky=E)
+		scrn3_textlbl5.grid(row=0, column=0, sticky=E)
+		scrn3_txtentry1.grid(row=0, column=0, sticky=E)
+		scrn3_txtentry2.grid(row=0, column=0, sticky=E)
+	else:
+		scrn3_textlbl1.grid_remove()
+		scrn3_textlbl2.grid_remove()
+		scrn3_textlbl3.grid_remove()
+		scrn3_textlbl4.grid_remove()
+		scrn3_textlbl5.grid_remove()
+		scrn3_txtentry1.grid_remove()
+		scrn3_txtentry2.grid_remove()
 	
 def toggle_screen4():							# registreer aantal af te nemen items
 	global show_scrn4
@@ -158,8 +181,8 @@ def toggle_screen4():							# registreer aantal af te nemen items
 			for x, key in enumerate(row):
 				# `lambda` inside `for` has to use `val=key:code(val)` 
 				# instead of direct `code(key)`
-				b = Button(BottomFrame, text=key, command=lambda val=key:keypad_key(val))
-				b.grid(row=y, column=x, ipadx=10, ipady=10)
+				b = Button(BottomFrame, text=key, width=10, command=lambda val=key:keypad_key(val))
+				b.grid(row=y, column=x) # b.grid(row=y, column=x, ipadx=10, ipady=10)
 		
 	else:
 		scrn4_textlbl1.grid_remove()
@@ -185,6 +208,7 @@ def bevestig_tag(tag):
 		toggle_screen2(klantnaam, klantsaldo)
 	else:
 		klant = "Sorry, uw Tag is onbekend!"
+		toggle_screen3(klant)
 	#klantlabel1.config(text = "Klant: "+klantnaam)
 	#klantlabel2.config(text = "Saldo: "+klantsaldo)
 	#print (klant)
@@ -245,7 +269,8 @@ TopCenterFrame.pack(side=TOP, fill=X)
 CenterCenterFrame = Frame(window, bg="red", bd=2)
 CenterCenterFrame.pack(fill=X)
 
-#screen1() Presenteer Tag
+# Bouw en arrangeer screen layouts
+# screen1() Presenteer Tag
 scrn1_imagelbl = Label (CenterCenterFrame, image=tagimage1, bg="black")
 scrn1_imagelbl.grid(row=0, column=0, sticky=N)
 scrn1_textlbl = Label (TopCenterFrame, text="Presenteer je TAG:", bg="black", fg="white", font="none 12 bold")
@@ -257,14 +282,14 @@ scrn1_tagentry.grid(row=0, column=0, sticky=S)
 scrn1_tagbtn = Button (CenterCenterFrame, text="Bevestig TAG", width=12, command=(lambda: bevestig_tag(scrn1_tagentry.get())))
 scrn1_tagbtn.grid(row=1, column=0, sticky=S)
 
-#screen2() Hoofdmenu
+# screen2() Hoofdmenu
 scrn2_select1 = Button (TopLeftFrame, text="Items aankopen", width=12, command=items_aankopen)
 scrn2_select2 = Button (TopRightFrame, text="Saldo wijzigen", width=12, command=saldo_wijzigen)
 scrn2_textlbl1 = Label(BottomFrame, text="Klant: ", bg="purple", fg="white", font="none 12 bold")
 scrn2_textlbl2 = Label(BottomFrame, text="Saldo: ", bg="purple", fg="white", font="none 12 bold")
 scrn2_textlbl3 = Label(TopCenterFrame, text="Maak een keuze: ", bg="black", fg="white", font="none 12 bold")
 
-#screen3() Tag onbekend, start registratie
+# screen3() Tag onbekend, start registratie
 scrn3_textlbl1 = Label(CenterCenterFrame, text="Oeps, u bent niet bekend in het systeem", bg="red", fg="white", font="none 12 bold")
 scrn3_textlbl2 = Label(CenterCenterFrame, text="Registreer u zelf...", bg="red", fg="white", font="none 12 bold")
 scrn3_textlbl3 = Label(CenterCenterFrame, text="Voornaam: ", bg="red", fg="white", font="none 12 bold")
@@ -273,7 +298,7 @@ scrn3_textlbl5 = Label(CenterCenterFrame, text="E-mail adres: ", bg="red", fg="w
 scrn3_txtentry1 = Entry(CenterCenterFrame, width=40, relief=SUNKEN, bg="white", fg="black")
 scrn3_txtentry2 = Entry(CenterCenterFrame, width=40, relief=SUNKEN, bg="white", fg="black")
 
-#screen4() Items kopen
+# screen4() Items kopen
 scrn4_textlbl1 = Label(CenterCenterFrame, text="Hoeveel items neem je?: ", bg="red", fg="white", font="none 12 bold")
 scrn4_txtentry1 = Entry(CenterCenterFrame, width=10, relief=SUNKEN, bg="white", fg="black")
 
@@ -293,7 +318,7 @@ keys = [
 #        b.grid(row=y, column=x, ipadx=10, ipady=10)
 
 
-#sxreen5() Saldo wijzigen
+# screen5() Saldo wijzigen
 #scrn5_select1 = radiobutton "opwaarderen"
 #scrn5_select2 = radiobutton "afwaarderen"
 scrn5_textlbl = Label(CenterCenterFrame, text="Euro", bg="red", fg="white", font="none 12 bold")

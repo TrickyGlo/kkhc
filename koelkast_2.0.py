@@ -51,7 +51,7 @@ show_scrn2 = False
 show_scrn3 = False
 show_scrn4 = False
 show_scrn5 = False
-
+nr_items=""
 
 
 ##### Funties:
@@ -70,6 +70,39 @@ def open_df(adm_file):
 		dataframe = pd.DataFrame(columns = ['TAG', 'Voornaam', 'Achternaam', 'E-mail adres', 'Saldo'])
 		dataframe.to_csv(Path(adm_file), index=False)
 		return dataframe
+
+# keypad function
+def keypad_key(value):
+
+    # inform function to use external/global variable
+    global nr_items
+
+    if value == 'Corr.':
+        # remove last number from `nr_items`
+        nr_items = nr_items[:-1]
+        # remove all from `entry` and put new `nr_items`
+        scrn4_txtentry1.delete('0', 'end')
+        scrn4_txtentry1.insert('end', nr_items)
+
+    elif value == 'Enter':
+        # check nr_items
+
+        if nr_items == "3529":
+            print("Items OK")
+        else:
+            print("Items ERROR!", nr_items)
+            # clear `nr_items`
+            nr_items = ""
+            # clear `entry`
+            scrn4_txtentry1.delete('0', 'end')
+
+    else:
+        # add number to nr+items
+        nr_items += value
+        # add number to `entry`
+        scrn4_txtentry1.insert('end', value)
+
+    print("Current:", nr_items)
 
 # schoon scherm
 def toggle_screen1():							# presenteer tag
@@ -120,6 +153,13 @@ def toggle_screen4():							# registreer aantal af te nemen items
 	if show_scrn4:
 		scrn4_textlbl1.grid(row=0, column=0, sticky=E)
 		scrn4_txtentry1.grid(row=0, column=1, sticky=E)
+		# create buttons using `keys`
+		for y, row in enumerate(keys, 1):
+			for x, key in enumerate(row):
+				# `lambda` inside `for` has to use `val=key:code(val)` 
+				# instead of direct `code(key)`
+				b = Button(BottomFrame, text=key, command=lambda val=key:keypad_key(val))
+				b.grid(row=y, column=x, ipadx=10, ipady=10)
 		
 	else:
 		scrn4_textlbl1.grid_remove()
@@ -236,6 +276,22 @@ scrn3_txtentry2 = Entry(CenterCenterFrame, width=40, relief=SUNKEN, bg="white", 
 #screen4() Items kopen
 scrn4_textlbl1 = Label(CenterCenterFrame, text="Hoeveel items neem je?: ", bg="red", fg="white", font="none 12 bold")
 scrn4_txtentry1 = Entry(CenterCenterFrame, width=10, relief=SUNKEN, bg="white", fg="black")
+
+keys = [
+    ['1', '2', '3', 'Stop'],    
+    ['4', '5', '6', 'Corr.'],    
+    ['7', '8', '9', 'Enter'],    
+    ['', '0', '.', ''],    
+]
+
+# create buttons using `keys`
+#for y, row in enumerate(keys, 1):
+#    for x, key in enumerate(row):
+#        # `lambda` inside `for` has to use `val=key:code(val)` 
+#        # instead of direct `code(key)`
+#        b = Button(BottomFrame, text=key, command=lambda val=key:keypad_key(val))
+#        b.grid(row=y, column=x, ipadx=10, ipady=10)
+
 
 #sxreen5() Saldo wijzigen
 #scrn5_select1 = radiobutton "opwaarderen"

@@ -51,6 +51,7 @@ show_scrn2 = False
 show_scrn3 = False
 show_scrn4 = False
 show_scrn5 = False
+scrn4_keybtn = []
 nr_items = ""
 
 
@@ -71,10 +72,31 @@ def open_df(adm_file):
 		dataframe.to_csv(Path(adm_file), index=False)
 		return dataframe
 
+def items_aankopen_adm(tag, df, nr_items, adm_file):
+	item_prijs = 0.5
+	uitgave = 0
+
+	# wijzig het saldo in het dataframe met het aantal afgenomen items
+	uitgave = int(nr_items) * item_prijs
+	nw_saldo = df.at[tag, 'Saldo'] - uitgave
+	df.at[tag, 'Saldo'] = nw_saldo
+	
+	# schrijf dit nieuwe saldo ook naar het csv bestand
+	df.to_csv(Path(adm_file), mode='w', header=True, index=True, index_label='TAG')
+	
+	print(df)
+		
+	return
+
+def items_aankopen():
+	toggle_screen2(null, null)
+	toggle_screen4()
+
 # keypad function
 def keypad_key(value):
 	# inform function to use external/global variable
 	global nr_items
+	global klanttag
 	
 	if value == 'Stop':
 		print("Stop")
@@ -82,6 +104,9 @@ def keypad_key(value):
 		nr_items = ""
 		# clear `entry`
 		scrn4_txtentry1.delete('0', 'end')
+		toggle_screen4()
+		toggle_screen1()
+		klanttag = ""
 		return None
 		
 	elif value == 'Corr.':
@@ -95,6 +120,17 @@ def keypad_key(value):
 		# check nr_items
 		if nr_items > "0":
 			print("Items OK")
+			# verwerk administratie
+			items_aankopen_adm(klanttag, df, nr_items, csv_file)
+			# laat nieuw saldo zien
+			# toggle screen4
+			scrn4_txtentry1.delete('0', 'end')
+			nr_items = ""
+			toggle_screen4()
+			# toogle screen1
+			toggle_screen1()
+			# verlaat deze functie
+			return None
 		else:
 			print("Items ERROR!", nr_items)
 			# clear `nr_items`
@@ -149,18 +185,19 @@ def toggle_screen2(klantnaam, klantsaldo):		# hoofdmenu
 		scrn2_textlbl3.grid_remove()
 	show_scrn2 = not show_scrn2
 		
-def toggle_screen3(klant):							# registreer nieuwe klant
+def toggle_screen3():							# registreer nieuwe klant
 	global show_scrn3
-	print(klant)
+
 	show_scrn3 = not show_scrn3
 	if show_scrn3:
 		scrn3_textlbl1.grid(row=0, column=0, sticky=E)
-		scrn3_textlbl2.grid(row=0, column=0, sticky=E)
-		scrn3_textlbl3.grid(row=0, column=0, sticky=E)
-		scrn3_textlbl4.grid(row=0, column=0, sticky=E)
-		scrn3_textlbl5.grid(row=0, column=0, sticky=E)
-		scrn3_txtentry1.grid(row=0, column=0, sticky=E)
-		scrn3_txtentry2.grid(row=0, column=0, sticky=E)
+		scrn3_textlbl2.grid(row=1, column=0, sticky=E)
+		scrn3_textlbl3.grid(row=2, column=0, sticky=E)
+		scrn3_textlbl4.grid(row=3, column=0, sticky=E)
+		scrn3_textlbl5.grid(row=4, column=0, sticky=E)
+		scrn3_txtentry1.grid(row=2, column=1, sticky=E)
+		scrn3_txtentry2.grid(row=3, column=1, sticky=E)
+		scrn3_txtentry3.grid(row=4, column=1, sticky=E)
 	else:
 		scrn3_textlbl1.grid_remove()
 		scrn3_textlbl2.grid_remove()
@@ -169,24 +206,37 @@ def toggle_screen3(klant):							# registreer nieuwe klant
 		scrn3_textlbl5.grid_remove()
 		scrn3_txtentry1.grid_remove()
 		scrn3_txtentry2.grid_remove()
+		scrn3_txtentry3.grid_remove()
 	
 def toggle_screen4():							# registreer aantal af te nemen items
 	global show_scrn4
+	global scrn4_keybtn
+	
 	show_scrn4 = not show_scrn4
+	
 	if show_scrn4:
 		scrn4_textlbl1.grid(row=0, column=0, sticky=E)
 		scrn4_txtentry1.grid(row=0, column=1, sticky=E)
-		# create buttons using `keys`
-		for y, row in enumerate(keys, 1):
+		i = 0
+		# create buttons using `keys_keypad`
+		for y, row in enumerate(keys_keypad, 1):
 			for x, key in enumerate(row):
 				# `lambda` inside `for` has to use `val=key:code(val)` 
 				# instead of direct `code(key)`
-				b = Button(BottomFrame, text=key, width=10, command=lambda val=key:keypad_key(val))
-				b.grid(row=y, column=x) # b.grid(row=y, column=x, ipadx=10, ipady=10)
+				#scrn4_keybtn[i] = Button(BottomFrame, text=key, width=8, command=lambda val=key:keypad_key(val))
+				scrn4_keybtn.append(Button(BottomFrame, text=key, width=8, command=lambda val=key:keypad_key(val)))
+				scrn4_keybtn[i].grid(row=y, column=x) # b.grid(row=y, column=x, ipadx=10, ipady=10)
+				i += 1
 		
 	else:
 		scrn4_textlbl1.grid_remove()
 		scrn4_txtentry1.grid_remove()
+		i = 0
+		# create buttons using `keys_keypad`
+		for y, row in enumerate(keys_keypad, 1):
+			for x, key in enumerate(row):
+				scrn4_keybtn[i].grid_remove()
+				i += 1
 		
 
 # read tag and confirm from csv
@@ -207,8 +257,7 @@ def bevestig_tag(tag):
 		klant = klantnaam + klantsaldo
 		toggle_screen2(klantnaam, klantsaldo)
 	else:
-		klant = "Sorry, uw Tag is onbekend!"
-		toggle_screen3(klant)
+		toggle_screen3()
 	#klantlabel1.config(text = "Klant: "+klantnaam)
 	#klantlabel2.config(text = "Saldo: "+klantsaldo)
 	#print (klant)
@@ -216,21 +265,7 @@ def bevestig_tag(tag):
 	#print ("Tag is %s" % klanttag)
 	#output.insert(END, klant)
 	
-def items_aankopen_adm(tag, df, nr_items, adm_file):
-	item_prijs = 0.5
 
-	# wijzig het saldo in het dataframe met het aantal afgenomen items
-	nw_saldo = df_org.at[tag, 'Saldo'] - (nr_items * item_prijs)
-	df_org.at[tag, 'Saldo'] = nw_saldo
-	
-	# schrijf dit nieuwe saldo ook naar het csv bestand
-	df_org.to_csv(Path(adm_file), mode='w', header=True, index=True, index_label='TAG')
-		
-	return df_org
-
-def items_aankopen():
-	toggle_screen2(null, null)
-	toggle_screen4()
 	
 	
 def saldo_wijzigen():
@@ -258,11 +293,11 @@ window.configure(background="black")
 tagimage1 = PhotoImage(file="RFID-tag-zwart.png")
 
 # Frame layout
-BottomFrame = Frame(window, bg="purple", bd=2)		# bg kleuren zijn gekozen om de frame layout te verduidelijken
+BottomFrame = Frame(window, bg="purple", bd=2, height=300)		# bg kleuren zijn gekozen om de frame layout te verduidelijken
 BottomFrame.pack(side=BOTTOM, fill=X)				# tijdens het ontwikkel proces. 
-TopLeftFrame = Frame(window, bg="blue", bd=2)		# deze kleuren zullen uit eindelijk aangepast worden in zwart
+TopLeftFrame = Frame(window, bg="blue", bd=2, width=100)		# deze kleuren zullen uit eindelijk aangepast worden in zwart
 TopLeftFrame.pack(side=LEFT, fill=Y)
-TopRightFrame = Frame(window, bg="blue", bd=2)
+TopRightFrame = Frame(window, bg="blue", bd=2, width=100)
 TopRightFrame.pack(side=RIGHT, fill=Y)
 TopCenterFrame = Frame(window, bg="black", bd=2)
 TopCenterFrame.pack(side=TOP, fill=X)
@@ -290,32 +325,34 @@ scrn2_textlbl2 = Label(BottomFrame, text="Saldo: ", bg="purple", fg="white", fon
 scrn2_textlbl3 = Label(TopCenterFrame, text="Maak een keuze: ", bg="black", fg="white", font="none 12 bold")
 
 # screen3() Tag onbekend, start registratie
-scrn3_textlbl1 = Label(CenterCenterFrame, text="Oeps, u bent niet bekend in het systeem", bg="red", fg="white", font="none 12 bold")
+scrn3_textlbl1 = Label(TopCenterFrame, text="Oeps, u bent niet bekend in het systeem", bg="red", fg="white", font="none 12 bold")
 scrn3_textlbl2 = Label(CenterCenterFrame, text="Registreer u zelf...", bg="red", fg="white", font="none 12 bold")
 scrn3_textlbl3 = Label(CenterCenterFrame, text="Voornaam: ", bg="red", fg="white", font="none 12 bold")
 scrn3_textlbl4 = Label(CenterCenterFrame, text="Achternaam: ", bg="red", fg="white", font="none 12 bold")
 scrn3_textlbl5 = Label(CenterCenterFrame, text="E-mail adres: ", bg="red", fg="white", font="none 12 bold")
 scrn3_txtentry1 = Entry(CenterCenterFrame, width=40, relief=SUNKEN, bg="white", fg="black")
 scrn3_txtentry2 = Entry(CenterCenterFrame, width=40, relief=SUNKEN, bg="white", fg="black")
+scrn3_txtentry3 = Entry(CenterCenterFrame, width=40, relief=SUNKEN, bg="white", fg="black")
 
 # screen4() Items kopen
 scrn4_textlbl1 = Label(CenterCenterFrame, text="Hoeveel items neem je?: ", bg="red", fg="white", font="none 12 bold")
 scrn4_txtentry1 = Entry(CenterCenterFrame, width=10, relief=SUNKEN, bg="white", fg="black")
 
-keys = [
+
+keys_keypad = [
     ['1', '2', '3', 'Stop'],    
     ['4', '5', '6', 'Corr.'],    
     ['7', '8', '9', 'Enter'],    
     ['', '0', '.', ''],    
 ]
 
-# create buttons using `keys`
-#for y, row in enumerate(keys, 1):
-#    for x, key in enumerate(row):
-#        # `lambda` inside `for` has to use `val=key:code(val)` 
-#        # instead of direct `code(key)`
-#        b = Button(BottomFrame, text=key, command=lambda val=key:keypad_key(val))
-#        b.grid(row=y, column=x, ipadx=10, ipady=10)
+keys_keyboard = [
+	['!', '#', '$', '%', '&', '*', '+', '-', '/', '=', '?', '^', '_', '`', '{', '|', '}', '~'],
+	['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'],
+	['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
+	['a', 's', 'd', 'f', 'g', 'h', 'i', 'j', 'k', 'l'],
+	['z', 'x', 'c', 'v', 'b', 'n', 'm','.', '@'],
+]
 
 
 # screen5() Saldo wijzigen

@@ -66,7 +66,6 @@ def open_df(adm_file):
 		return dataframe
 	else:
 		# creeer dataframe sla op in csv bestand
-		#adm_file_layout = {'TAG','Voornaam','Achternaam','E-mail adres','Saldo'}
 		#columns = ['TAG', 'Voornaam', 'Achternaam', 'E-mail adres', 'Saldo']
 		dataframe = pd.DataFrame(columns = ['TAG', 'Voornaam', 'Achternaam', 'E-mail adres', 'Saldo'])
 		dataframe.to_csv(Path(adm_file), index=False)
@@ -83,15 +82,21 @@ def items_aankopen_adm(tag, df, nr_items, adm_file):
 	
 	# schrijf dit nieuwe saldo ook naar het csv bestand
 	df.to_csv(Path(adm_file), mode='w', header=True, index=True, index_label='TAG')
-	
-	print(df)
 		
 	return
 
 def items_aankopen():
 	toggle_screen2(null, null)
 	toggle_screen4()
-
+	# verwerk administratie
+	items_aankopen_adm(klanttag, df, nr_items, csv_file)
+	# laat nieuw saldo zien
+	scrn4_txtentry1.delete('0', 'end')
+	nr_items = ""
+	toggle_screen4()
+	# toogle screen1
+	toggle_screen1()
+	
 # keypad function
 def keypad_key(value):
 	# inform function to use external/global variable
@@ -120,15 +125,9 @@ def keypad_key(value):
 		# check nr_items
 		if nr_items > "0":
 			print("Items OK")
-			# verwerk administratie
-			items_aankopen_adm(klanttag, df, nr_items, csv_file)
-			# laat nieuw saldo zien
+
 			# toggle screen4
-			scrn4_txtentry1.delete('0', 'end')
-			nr_items = ""
-			toggle_screen4()
-			# toogle screen1
-			toggle_screen1()
+
 			# verlaat deze functie
 			return None
 		else:
@@ -356,9 +355,10 @@ keys_keyboard = [
 
 
 # screen5() Saldo wijzigen
-#scrn5_select1 = radiobutton "opwaarderen"
-#scrn5_select2 = radiobutton "afwaarderen"
-scrn5_textlbl = Label(CenterCenterFrame, text="Euro", bg="red", fg="white", font="none 12 bold")
+scrn5_select1 = Radiobutton(CenterCenterFrame, text="Opwaarderen", variable=saldo_mut, value="opwaarderen")
+scrn5_select2 = Radiobutton(CenterCenterFrame, text="Afwaarderen", variable=saldo_mut, value="afwaarderen")
+scrn5_textlbl1 = Label(TopCenterFrame, text="Saldo aanpassen", bg="black", fg="white", font="none 12 bold")
+scrn5_textlbl2 = Label(CenterCenterFrame, text="Euro", bg="red", fg="white", font="none 12 bold")
 scrn5_txtentry1 = Entry(CenterCenterFrame, width=10, relief=SUNKEN, bg="white", fg="black")
 
 

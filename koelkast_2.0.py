@@ -53,6 +53,7 @@ show_scrn4 = False
 show_scrn5 = False
 scrn4_keybtn = []
 nr_items = ""
+saldo_mut = ""
 
 
 ##### Funties:
@@ -71,7 +72,9 @@ def open_df(adm_file):
 		dataframe.to_csv(Path(adm_file), index=False)
 		return dataframe
 
-def items_aankopen_adm(tag, df, nr_items, adm_file):
+def items_aankopen_adm(tag, df, items, adm_file):
+	global nr_items
+	
 	item_prijs = 0.5
 	uitgave = 0
 
@@ -86,6 +89,8 @@ def items_aankopen_adm(tag, df, nr_items, adm_file):
 	return
 
 def items_aankopen():
+	global nr_items
+	
 	toggle_screen2(null, null)
 	toggle_screen4()
 	# verwerk administratie
@@ -98,12 +103,12 @@ def items_aankopen():
 	toggle_screen1()
 	
 # keypad function
-def keypad_key(value):
+def keypad(key):
 	# inform function to use external/global variable
 	global nr_items
 	global klanttag
 	
-	if value == 'Stop':
+	if key == 'Stop':
 		print("Stop")
 		# clear `nr_items`
 		nr_items = ""
@@ -114,20 +119,17 @@ def keypad_key(value):
 		klanttag = ""
 		return None
 		
-	elif value == 'Corr.':
+	elif key == 'Corr.':
 		# remove last number from `nr_items`
 		nr_items = nr_items[:-1]
 		# remove all from `entry` and put new `nr_items`
 		scrn4_txtentry1.delete('0', 'end')
 		scrn4_txtentry1.insert('end', nr_items)
 		
-	elif value == 'Enter':
+	elif key == 'Enter':
 		# check nr_items
 		if nr_items > "0":
 			print("Items OK")
-
-			# toggle screen4
-
 			# verlaat deze functie
 			return None
 		else:
@@ -139,9 +141,9 @@ def keypad_key(value):
 	
 	else:
 		# add number to nr+items
-		nr_items += value
+		nr_items += key
 		# add number to `entry`
-		scrn4_txtentry1.insert('end', value)
+		scrn4_txtentry1.insert('end', key)
 	
 	print("Current:", nr_items)
 
@@ -223,7 +225,7 @@ def toggle_screen4():							# registreer aantal af te nemen items
 				# `lambda` inside `for` has to use `val=key:code(val)` 
 				# instead of direct `code(key)`
 				#scrn4_keybtn[i] = Button(BottomFrame, text=key, width=8, command=lambda val=key:keypad_key(val))
-				scrn4_keybtn.append(Button(BottomFrame, text=key, width=8, command=lambda val=key:keypad_key(val)))
+				scrn4_keybtn.append(Button(BottomFrame, text=key, width=8, command=lambda val=key:keypad(val)))
 				scrn4_keybtn[i].grid(row=y, column=x) # b.grid(row=y, column=x, ipadx=10, ipady=10)
 				i += 1
 		
@@ -241,8 +243,8 @@ def toggle_screen4():							# registreer aantal af te nemen items
 # read tag and confirm from csv
 def bevestig_tag(tag):
 	global klanttag
-	global klantlabel1
-	global klantlabel2
+	#global klantlabel1
+	#global klantlabel2
 	global tagprovided
 	
 	tagprovided=True

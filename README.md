@@ -1,22 +1,9 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html>
 <head>
-	<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
-	<title></title>
-	<meta name="generator" content="LibreOffice 6.1.2.1 (Linux)"/>
-	<meta name="created" content="00:00:00"/>
-	<meta name="changed" content="2018-10-20T11:51:39.015256178"/>
-	<style type="text/css">
-		@page { size: 21cm 29.7cm; margin-left: 2cm; margin-right: 1cm; margin-top: 1cm; margin-bottom: 1cm }
-		p { margin-bottom: 0.25cm; line-height: 115%; background: transparent }
-		h1 { margin-bottom: 0.21cm; background: transparent; page-break-after: avoid }
-		h1.western { font-family: "Liberation Serif", serif; font-size: 24pt; font-weight: bold }
-		h1.cjk { font-family: "DejaVu Sans"; font-size: 24pt; font-weight: bold }
-		h1.ctl { font-family: "Noto Sans Devanagari"; font-size: 24pt; font-weight: bold }
-	</style>
 </head>
 <body lang="nl-NL" link="#000080" vlink="#800000" dir="ltr"><p align="center" style="margin-top: 0.42cm; margin-bottom: 0.21cm; line-height: 100%; page-break-after: avoid">
-<font face="Liberation Sans, sans-serif"><font size="6" style="font-size: 28pt"><b>KKHC</b></font></font></p>
+<font face="Liberation Sans, sans-serif"><font size="18" style="font-size: 28pt"><b>KKHC</b></font></font></p>
 <h1 class="western">Koelkast Hobby Club</h1>
 <p>De KKHC is een hobby project van een aantal collega's. Als IT
 afdeling hebben we een koelkast waarin blikjes, repen, en koeken te
@@ -59,7 +46,6 @@ De registratie vraagt om een paar gegevens, namelijk:
 <br/>
 <br/>
 
-	</p>
 </ul>
 <p>Het hoofdmenu kent 3 opties:</p>
 <ul>
@@ -70,7 +56,6 @@ De registratie vraagt om een paar gegevens, namelijk:
 <br/>
 <br/>
 
-	</p>
 </ul>
 <p>Items kopen vraag om het aantal items, en past het saldo evenredig
 aan voor de klant. Hierna is de transactie klaar.</p>
